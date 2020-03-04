@@ -10,7 +10,7 @@ We are looking for concise, testable, clean, well commented code and that you ha
 
 Using best practice coding methods, build a console application that scrapes the following website url https://videx.comesconnected.com/ and returns a JSON array of all the product options on the page.
 
-Each element in the JSON results array should contain 'option' title', 'description', 'price' and 'discount' keys corresponding to items in the table. The items should be ordered by annual price with the most expensive package first.
+Each element in the JSON results array should contain 'option title', 'description', 'price' and 'discount' keys corresponding to items in the table. The items should be ordered by annual price with the most expensive package first.
 
 Your code should:
 * Include unit tests.
