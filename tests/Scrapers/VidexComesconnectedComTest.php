@@ -9,31 +9,26 @@ use Symfony\Component\DomCrawler\Crawler;
 
 class VidexComesconnectedComTest extends TestCase
 {
-    /** @var \App\Scrapers\VidexComesconnectedCom */
-    private $v;
-    /** @var \PHPUnit\Framework\MockObject\MockObject|\Symfony\Component\BrowserKit\HttpBrowser */
-    private $mockHttpBrowser;
-
-    protected function setUp(): void
-    {
-        $this->mockHttpBrowser = $this->createMock(HttpBrowser::class);
-        $this->v = new VidexComesconnectedCom($this->mockHttpBrowser);
-    }
-
-    public function testGetHtmlCrawlerResults()
+    public function testGetHtmlCrawler()
     {
         $crawler = new Crawler();
         $crawler->addHtmlContent('<html> <body> <p>page</p> </body>');
 
-        $this->mockHttpBrowser->method('request')
+        $mockHttpBrowser = $this->createMock(HttpBrowser::class);
+        $mockHttpBrowser->method('request')
             ->willReturn($crawler);
 
-        $actual = $this->v->getHtmlCrawler('https://example.com');
-        $this->assertInstanceOf(Crawler::class, $actual);
+        $videxComesConnected = new VidexComesconnectedCom($mockHttpBrowser);
+        
+        $actual = $videxComesConnected->getHtmlCrawler('https://example.com');
+        $this->assertInstanceOf(Crawler::class, $actual);   // redundant with strong types
+        
+        $domNode = $actual->filter('p');
+        $this->assertSame('page', $domNode->getNode(0)->nodeValue, 'Expected to get the p-text from test html');
     }
 
-    public function testScrape()
+    public function testParse()
     {
-        $this->markTestIncomplete();
+        $this->markTestSKipped();
     }
 }

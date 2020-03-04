@@ -18,8 +18,11 @@ class VidexComesconnectedCom implements Scraper
         $this->httpBrowser = $httpBrowser ?? new HttpBrowser(HttpClient::create());
     }
 
-    public function scrape(string $url): array
+    public function scrape(string $url, ?HttpBrowser $httpBrowser = null): array
     {
+        // allows for a local override, if needed
+        $this->httpBrowser = $httpBrowser ?? $this->httpBrowser;
+
         $crawler = $this->getHtmlCrawler($url);
         
         $videxItems = $this->parse($crawler);

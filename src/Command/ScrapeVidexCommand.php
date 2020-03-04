@@ -4,11 +4,14 @@ declare(strict_types=1);
 namespace App\Command;
 
 use App\Scrapers\VidexComesconnectedCom;
+use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\HttpClient\HttpClient;
 
 class ScrapeVidexCommand extends Command
 {
@@ -27,6 +30,7 @@ class ScrapeVidexCommand extends Command
         $this
             ->setDescription('Scrape the //videx.comesconnected.com webpage to collect data')
             ->addArgument('url', InputArgument::OPTIONAL, 'URL to scrape', 'https://videx.comesconnected.com/')
+            ->addOption('allow-broken-ssl', '', InputOption::VALUE_NONE, 'Allow the TLS certificate to be ignored (not checked) [true|false]')
         ;
     }
 
@@ -35,8 +39,14 @@ class ScrapeVidexCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $url = $input->getArgument('url');
 
+        if ($input->getOption('allow-broken-ssl')) {
+            $options = ['verify_peer' => false]; // the test site is broken
+        }
+        // This would otherwise be an option into a factory to make the HttpClient  
+        $httpBrowser = new HttpBrowser(HttpClient::create($options ?? []));
+
         try {
-            $collectedData = $this->scraper->scrape($url);
+            $collectedData = $this->scraper->scrape($url, $httpBrowser);
             if ($collectedData) {
                 $io->note(json_encode($collectedData));
                 return 0;
