@@ -48,7 +48,7 @@ class ScrapeVidexCommand extends Command
         try {
             $collectedData = $this->scraper->scrape($url, $httpBrowser);
             if ($collectedData) {
-                $io->note(json_encode($collectedData));
+                $io->writeln(json_encode($collectedData, JSON_PRETTY_PRINT|JSON_THROW_ON_ERROR, 512));
                 return 0;
             }            
         } catch (\Throwable $exception) {

@@ -11,15 +11,8 @@ class VidexComesconnectedComTest extends TestCase
 {
     public function testGetHtmlCrawler()
     {
-        $crawler = new Crawler();
-        $crawler->addHtmlContent('<html> <body> <p>page</p> </body>');
+        $videxComesConnected = $this->makeVidexComesConnectedComObject('<html> <body> <p>page</p> </body>');
 
-        $mockHttpBrowser = $this->createMock(HttpBrowser::class);
-        $mockHttpBrowser->method('request')
-            ->willReturn($crawler);
-
-        $videxComesConnected = new VidexComesconnectedCom($mockHttpBrowser);
-        
         $actual = $videxComesConnected->getHtmlCrawler('https://example.com');
         $this->assertInstanceOf(Crawler::class, $actual);   // redundant with strong types
         
@@ -29,6 +22,26 @@ class VidexComesconnectedComTest extends TestCase
 
     public function testParse()
     {
-        $this->markTestSKipped();
+        $videxComesConnected = $this->makeVidexComesConnectedComObject(
+            file_get_contents(__DIR__. '/../fixtures/webpage.html')
+        );
+
+        $actual = $videxComesConnected->getHtmlCrawler('https://example.com');
+        $domNodes = $actual->filter('#subscriptions div.package');
+        $this->assertSame(6, $domNodes->count());   // 6 packages, 3 of them are annual copies though.
+
+        $actual = $videxComesConnected->scrape('url');
+        $this->assertCount(6, $actual);
+    }
+
+    private function makeVidexComesConnectedComObject(string $content): VidexComesconnectedCom
+    {
+        $crawler = new Crawler();
+        $crawler->addHtmlContent($content);
+
+        $mockHttpBrowser = $this->createMock(HttpBrowser::class);
+        $mockHttpBrowser->method('request')->willReturn($crawler);
+
+        return new VidexComesconnectedCom($mockHttpBrowser);
     }
 }
