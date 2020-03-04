@@ -18,3 +18,64 @@ Your code should:
 * The application should be written in PHP 
 
 You may use a dependency management system (e.g. composer) and as many dependencies as you like.
+
+## Setup
+
+    # clone the git repository
+    composer install
+    # run tests:
+    php -f phpunit.phar -- --colors --verbose --testdox --coverage-html=build/coverage ./tests/
+
+    # Run the command:
+    bin/console app:scrape:videx    # the option `--allow-broken-ssl` also exists which turns off certificat checking...
+
+## Output:
+
+The webpage URL is fetched by 'symfony/http-client', inside a 'symfony/dom-crawler' instance. The parsing of the webpage happens in \App\Scrapers\VidexComesconnectedCom::parse(), which puts the data into a value object, which is then further cleaned, and then sorted buy the annual price (shown below).   
+
+This is the output from `bin/console app:scrape:videx`. Monthly prices (the first three items [0,1,2]) are multiplied by 12 for the annual cost, and then sorted in descending order. 
+
+    [
+        {
+            "id": 2,
+            "optionTitle": "Option 300 Mins",
+            "desc": "300 minutes talk time per monthincluding 40 SMS(5p \/ minute and 4p \/ SMS thereafter)",
+            "price": 192,
+            "discount": ""
+        },
+        {
+            "id": 5,
+            "optionTitle": "Option 3600 Mins",
+            "desc": "Up to 3600 minutes talk time per year including 480 SMS(5p \/ minute and 4p \/ SMS thereafter)",
+            "price": 174,
+            "discount": "Save \u00a318 on the monthly price"
+        },
+        {
+            "id": 1,
+            "optionTitle": "Option 160 Mins",
+            "desc": "Up to 160 minutes talk time per monthincluding 35 SMS(5p \/ minute and 4p \/ SMS thereafter)",
+            "price": 120,
+            "discount": ""
+        },
+        {
+            "id": 4,
+            "optionTitle": "Option 2000 Mins",
+            "desc": "Up to 2000 minutes talk time per year including 420 SMS(5p \/ minute and 4p \/ SMS thereafter)",
+            "price": 108,
+            "discount": "Save \u00a312 on the monthly price"
+        },
+        {
+            "id": 0,
+            "optionTitle": "Option 40 Mins",
+            "desc": "Up to 40 minutes talk time per monthincluding 20 SMS(5p \/ minute and 4p \/ SMS thereafter)",
+            "price": 72,
+            "discount": ""
+        },
+        {
+            "id": 3,
+            "optionTitle": "Option 480 Mins",
+            "desc": "Up to 480 minutes talk time per yearincluding 240 SMS(5p \/ minute and 4p \/ SMS thereafter)",
+            "price": 66,
+            "discount": "Save \u00a35 on the monthly price"
+        }
+    ]
